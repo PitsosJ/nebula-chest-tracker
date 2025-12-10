@@ -13,7 +13,7 @@ function createSpawnEl(sp){
   else if(sp.type === 'C') emoji = '📦'; // chest
 
   // Προβολή: "M 🪨 - Orc Village"
-  div.textContent = `${emoji} - ${sp.location}`;
+  div.textContent = `${emoji}    ${sp.location}`;
 
   const popup = document.createElement('div');
   popup.className = 'popup';
