@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Spawn Tracker</title>
+<style>
+body {
+font-family: Arial, sans-serif;
+background: #111;
+color: #eee;
+padding: 20px;
+}
+.section {
+margin-bottom: 30px;
+}
+
+
+h2 {
+margin-bottom: 10px;
+}
+
+
+.location {
+position: relative;
+display: inline-block;
+margin-right: 10px;
+padding: 4px 6px;
+background: #222;
+border-radius: 6px;
+cursor: pointer;
+}
+
+
+.popup {
+display: none;
+position: absolute;
+top: 30px;
+left: 0;
+background: #000;
+padding: 8px;
+border: 1px solid #555;
+border-radius: 8px;
+z-index: 999;
+}
+
+
+.popup img {
+width: 200px;
+height: auto;
+border-radius: 5px;
+}
+
+
+.location:hover .popup {
+display: block;
+}
+
+
+.time-block {
+padding: 10px;
+background: #1b1b1b;
+border-radius: 10px;
+margin-bottom: 15px;
+}
+</style>
+</head>
+<body>
+
+
+<h1>Spawn Tracker</h1>
+<p>Δείχνει προηγούμενα / τρέχοντα / επόμενα spawn ανά ώρα.</p>
+
+
+<!-- Example current cycle -->
+<div class="section">
+<h2>Τρέχον Spawn (7:00 - 7:40)</h2>
+<div class="time-block">
+<div class="location">Location A
+<div class="popup">
+<img src="map-location-a.png" alt="Map Location A" />
+</div>
+</div>
+<div class="location">Location B
+<div class="popup">
+<img src="map-location-b.png" alt="Map Location B" />
