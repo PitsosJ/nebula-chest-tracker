@@ -6,13 +6,22 @@ function pad(n){ return String(n).padStart(2,'0'); }
 function createSpawnEl(sp){
   const div = document.createElement('div');
   div.className = 'spawn';
-  div.textContent = `${sp.location} (${sp.type})`;
+
+  // Επιλογή emoji ανά τύπο
+  let emoji = '';
+  if(sp.type === 'M') emoji = '🪨'; // πέτρα
+  else if(sp.type === 'C') emoji = '📦'; // chest
+
+  // Προβολή: "M 🪨 - Orc Village"
+  div.textContent = `${emoji} - ${sp.location}`;
+
   const popup = document.createElement('div');
   popup.className = 'popup';
   popup.innerHTML = `<strong>${sp.location}</strong><br>Type: ${sp.type}<br>Hour CET: ${pad(sp.hourCET)}:00`;
   div.appendChild(popup);
   return div;
 }
+
 
 // ---------- CET clock (single, robust) ----------
 function ensureCETClock() {
@@ -87,6 +96,11 @@ function renderColumnSpawns(containerId, spawnsArr){
     container.appendChild(empty);
     return;
   }
+  //spawnsArr.forEach(s => container.appendChild(createSpawnEl(s)));
+  spawnsArr.sort((a, b) => {
+    if (a.type === b.type) return 0;
+    return a.type === 'M' ? -1 : 1;
+  });
   spawnsArr.forEach(s => container.appendChild(createSpawnEl(s)));
 }
 
@@ -99,7 +113,8 @@ function setTimeLabel(labelId, hourCETArr){
     return;
   }
   const h = hourCETArr[0].hourCET;
-  el.textContent = `${pad(h)}:00 — ${pad(h)}:40 CET`;
+  //el.textContent = `${pad(h)}:00 — ${pad(h)}:40 CET`;
+  el.textContent = `${pad(h)}:00 — ${pad(h)}:40`;
 }
 
 // ---------- main update ----------
@@ -127,11 +142,11 @@ function updateAll() {
   setTimeLabel('time-next', next);
 
   // now-indicator: only one small label near current column (no duplicate clocks)
-  const nowInd = document.getElementById('now-indicator');
-  if(nowInd){
-    if(current && current.length > 0) nowInd.textContent = 'ACTIVE NOW';
-    else nowInd.textContent = 'Upcoming';
-  }
+  // const nowInd = document.getElementById('now-indicator');
+  // if(nowInd){
+  //   if(current && current.length > 0) nowInd.textContent = 'ACTIVE NOW';
+  //   else nowInd.textContent = 'Upcoming';
+  // }
 }
 
 // ---------- init on DOM ready ----------
