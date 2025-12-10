@@ -1,86 +1,145 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="el">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Spawn Tracker</title>
 <style>
-body {
-font-family: Arial, sans-serif;
-background: #111;
-color: #eee;
-padding: 20px;
-}
-.section {
-margin-bottom: 30px;
-}
+  :root{
+    --bg:#0f1113;
+    --card:#141619;
+    --muted:#bfc6cc;
+    --accent:#26a69a;
+    --panel-radius:10px;
+  }
+  body{
+    margin:0;
+    font-family:Inter, Roboto, Arial, sans-serif;
+    background:var(--bg);
+    color:#e6eef3;
+    display:flex;
+    min-height:100vh;
+    align-items:flex-start;
+    justify-content:center;
+    padding:28px;
+  }
 
+  .container{
+    width:100%;
+    max-width:960px;
+  }
 
-h2 {
-margin-bottom: 10px;
-}
+  h1{
+    margin:0 0 14px 0;
+    font-size:20px;
+    text-align:center;
+    color:var(--muted);
+  }
 
+  .grid {
+    display:flex;
+    gap:14px;
+    align-items:flex-start;
+  }
 
-.location {
-position: relative;
-display: inline-block;
-margin-right: 10px;
-padding: 4px 6px;
-background: #222;
-border-radius: 6px;
-cursor: pointer;
-}
+  .col {
+    flex:1;
+    background:var(--card);
+    border-radius:var(--panel-radius);
+    padding:14px;
+    text-align:center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+  }
 
+  .col h2{
+    margin:0;
+    font-size:16px;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+  }
 
-.popup {
-display: none;
-position: absolute;
-top: 30px;
-left: 0;
-background: #000;
-padding: 8px;
-border: 1px solid #555;
-border-radius: 8px;
-z-index: 999;
-}
+  .time {
+    margin-top:8px;
+    color:var(--muted);
+    font-size:13px;
+  }
 
+  .spawns {
+    margin-top:12px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    align-items:center;
+  }
 
-.popup img {
-width: 200px;
-height: auto;
-border-radius: 5px;
-}
+  .spawn {
+    position:relative;
+    min-width:150px;
+    padding:8px 10px;
+    border-radius:8px;
+    background:rgba(255,255,255,0.02);
+    cursor:default;
+    font-size:14px;
+  }
 
+  .spawn .popup {
+    display:none;
+    position:absolute;
+    top:calc(100% + 8px);
+    left:50%;
+    transform:translateX(-50%);
+    background:#0b0c0d;
+    border:1px solid rgba(255,255,255,0.06);
+    padding:8px;
+    border-radius:8px;
+    width:220px;
+    z-index:30;
+  }
 
-.location:hover .popup {
-display: block;
-}
+  .spawn img {
+    width:100%;
+    height:auto;
+    display:block;
+    border-radius:6px;
+  }
 
+  .spawn:hover .popup { display:block; }
 
-.time-block {
-padding: 10px;
-background: #1b1b1b;
-border-radius: 10px;
-margin-bottom: 15px;
-}
+  .muted-small { color:var(--muted); font-size:12px; margin-top:6px; }
+
+  @media (max-width:720px){
+    .grid { flex-direction:column; }
+  }
 </style>
 </head>
 <body>
+  <div class="container">
+    <h1>Spawn Tracker</h1>
 
+    <div class="grid">
+      <div class="col" id="col-previous">
+        <h2>Previous</h2>
+        <div class="time" id="time-previous">—</div>
+        <div class="spawns" id="spawns-previous"></div>
+      </div>
 
-<h1>Spawn Tracker</h1>
-<p>Δείχνει προηγούμενα / τρέχοντα / επόμενα spawn ανά ώρα.</p>
+      <div class="col" id="col-current">
+        <h2>Current</h2>
+        <div class="time" id="time-current">—</div>
+        <div class="spawns" id="spawns-current"></div>
+        <div class="muted-small" id="now-indicator"></div>
+      </div>
 
+      <div class="col" id="col-next">
+        <h2>Next</h2>
+        <div class="time" id="time-next">—</div>
+        <div class="spawns" id="spawns-next"></div>
+      </div>
+    </div>
+  </div>
 
-<!-- Example current cycle -->
-<div class="section">
-<h2>Τρέχον Spawn (7:00 - 7:40)</h2>
-<div class="time-block">
-<div class="location">Location A
-<div class="popup">
-<img src="map-location-a.png" alt="Map Location A" />
-</div>
-</div>
-<div class="location">Location B
-<div class="popup">
-<img src="map-location-b.png" alt="Map Location B" />
+  <!-- scripts -->
+  <script src="spawns.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
