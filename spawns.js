@@ -348,5 +348,5 @@ Sunday: [
   {hourCET: 22, location: 'Seal Sanctuary', type: 'M'},
   {hourCET: 23, location: 'Shrine of Devotion', type: 'M'},
   {hourCET: 23, location: 'Seal Sanctuary', type: 'C'}
-],
+]
 };

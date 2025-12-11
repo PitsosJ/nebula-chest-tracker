@@ -7,12 +7,10 @@ function createSpawnEl(sp){
   const div = document.createElement('div');
   div.className = 'spawn';
 
-  // Επιλογή emoji ανά τύπο
   let emoji = '';
   if(sp.type === 'M') emoji = '🪨'; // πέτρα
   else if(sp.type === 'C') emoji = '📦'; // chest
 
-  // Προβολή: "M 🪨 - Orc Village"
   div.textContent = `${emoji}    ${sp.location}`;
 
   const popup = document.createElement('div');
@@ -22,14 +20,11 @@ function createSpawnEl(sp){
   return div;
 }
 
-
 // ---------- CET clock (single, robust) ----------
 function ensureCETClock() {
-  // try existing element first (user HTML might already have it)
   let el = document.getElementById('cet-clock');
   if (el) return el;
 
-  // otherwise create it above the grid (inside .container if exists)
   const container = document.querySelector('.container') || document.body;
   el = document.createElement('div');
   el.id = 'cet-clock';
@@ -42,7 +37,6 @@ function ensureCETClock() {
 }
 
 function updateCETClockElem(el) {
-  // use Intl so DST is handled correctly
   const now = new Date();
   const fmt = new Intl.DateTimeFormat('en-GB', {
     timeZone: 'Europe/Berlin',
@@ -54,31 +48,41 @@ function updateCETClockElem(el) {
 
 // ---------- compute previous/current/next (per-hour) ----------
 function getSpawnsByHour(spawnData) {
-  // get "now" in CET
   const now = new Date();
-  const nowCETstr = now.toLocaleString('en-GB', { timeZone: 'Europe/Berlin' });
-  const nowCET = new Date(nowCETstr);
-  const hour = nowCET.getHours();
 
-  // get current day name matching your spawnData keys
+  const dtf = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/Berlin',
+    weekday: 'long',
+    hour: 'numeric',
+    hour12: false
+  });
+
+  const parts = dtf.formatToParts(now);
+  const todayName = parts.find(p => p.type === 'weekday').value;
+  const hour = parseInt(parts.find(p => p.type === 'hour').value, 10);
+
   const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-  const todayName = days[nowCET.getDay()];
-  const tomorrowName = days[(nowCET.getDay()+1)%7];
+  const tomorrowName = days[(days.indexOf(todayName)+1)%7];
+  const yesterdayName = days[(days.indexOf(todayName)+6)%7];
 
-  const todaySpawns = (spawnData && spawnData[todayName]) ? spawnData[todayName] : [];
-  const tomorrowSpawns = (spawnData && spawnData[tomorrowName]) ? spawnData[tomorrowName] : [];
+  const todaySpawns = spawnData[todayName] || [];
+  const tomorrowSpawns = spawnData[tomorrowName] || [];
+  const yesterdaySpawns = spawnData[yesterdayName] || [];
 
   const prevHour = (hour === 0) ? 23 : hour - 1;
   const nextHour = (hour === 23) ? 0 : hour + 1;
 
-  const previous = todaySpawns.filter(s => s.hourCET === prevHour);
+  const previous = prevHour === 23 ? yesterdaySpawns.filter(s => s.hourCET === 23)
+                                   : todaySpawns.filter(s => s.hourCET === prevHour);
   const current  = todaySpawns.filter(s => s.hourCET === hour);
-  const next = nextHour === 0 ? tomorrowSpawns.filter(s => s.hourCET === 0)
-                              : todaySpawns.filter(s => s.hourCET === nextHour);
+  const next     = nextHour === 0 ? tomorrowSpawns.filter(s => s.hourCET === 0)
+                                  : todaySpawns.filter(s => s.hourCET === nextHour);
 
-  console.debug('getSpawnsByHour', { nowCET: nowCET.toString(), hour, prevHour, nextHour,
-                                    counts: { previous: previous.length, current: current.length, next: next.length }});
-  return { previous, current, next };
+  return {
+    previous: { spawns: previous, day: prevHour === 23 ? yesterdayName : todayName },
+    current:  { spawns: current,  day: todayName },
+    next:     { spawns: next,     day: nextHour === 0 ? tomorrowName : todayName }
+  };
 }
 
 // ---------- render ----------
@@ -96,7 +100,6 @@ function renderColumnSpawns(containerId, spawnsArr){
     container.appendChild(empty);
     return;
   }
-  //spawnsArr.forEach(s => container.appendChild(createSpawnEl(s)));
   spawnsArr.sort((a, b) => {
     if (a.type === b.type) return 0;
     return a.type === 'M' ? -1 : 1;
@@ -104,17 +107,17 @@ function renderColumnSpawns(containerId, spawnsArr){
   spawnsArr.forEach(s => container.appendChild(createSpawnEl(s)));
 }
 
-function setTimeLabel(labelId, hourCETArr){
-  // hourCETArr is an array of spawns for that hour; we show the hour range based on first spawn if exists
+function setTimeLabel(labelId, spawnsObj){
   const el = document.getElementById(labelId);
   if(!el) return;
-  if(!hourCETArr || hourCETArr.length === 0){
+  const spawnsArr = spawnsObj.spawns;
+  const day = spawnsObj.day;
+  if(!spawnsArr || spawnsArr.length === 0){
     el.textContent = '—';
     return;
   }
-  const h = hourCETArr[0].hourCET;
-  //el.textContent = `${pad(h)}:00 — ${pad(h)}:40 CET`;
-  el.textContent = `${pad(h)}:00 — ${pad(h)}:40`;
+  const h = spawnsArr[0].hourCET;
+  el.textContent = `${day} • ${pad(h)}:00 — ${pad(h)}:40`;
 }
 
 // ---------- main update ----------
@@ -125,33 +128,21 @@ function updateAll() {
   }
 
   const cetClockEl = ensureCETClock();
-  // update clock
   updateCETClockElem(cetClockEl);
 
-  // get spawns
   const { previous, current, next } = getSpawnsByHour(spawnData);
 
-  // render
-  renderColumnSpawns('spawns-previous', previous);
-  renderColumnSpawns('spawns-current', current);
-  renderColumnSpawns('spawns-next', next);
+  renderColumnSpawns('spawns-previous', previous.spawns);
+  renderColumnSpawns('spawns-current', current.spawns);
+  renderColumnSpawns('spawns-next', next.spawns);
 
-  // set time labels (use arrays to get hour)
   setTimeLabel('time-previous', previous);
   setTimeLabel('time-current', current);
   setTimeLabel('time-next', next);
-
-  // now-indicator: only one small label near current column (no duplicate clocks)
-  // const nowInd = document.getElementById('now-indicator');
-  // if(nowInd){
-  //   if(current && current.length > 0) nowInd.textContent = 'ACTIVE NOW';
-  //   else nowInd.textContent = 'Upcoming';
-  // }
 }
 
 // ---------- init on DOM ready ----------
 document.addEventListener('DOMContentLoaded', () => {
-  // run immediately and schedule updates
   try {
     updateAll();
     setInterval(updateAll, 1000);
