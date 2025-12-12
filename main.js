@@ -8,8 +8,8 @@ function createSpawnEl(sp){
   div.className = 'spawn';
 
   let imgSrc = '';
-  if (sp.type === 'M') imgSrc = './images/stone.webp';     // πέτρα
-  else if (sp.type === 'C') imgSrc = './images/chest.webp'; // chest
+  if (sp.type === 'M') imgSrc = 'images/stone.webp';     // πέτρα
+  else if (sp.type === 'C') imgSrc = 'images/chest.webp'; // chest
 
   const img = document.createElement('img');
   img.src = imgSrc;
