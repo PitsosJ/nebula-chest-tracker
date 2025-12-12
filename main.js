@@ -157,7 +157,7 @@ function updateAll() {
 document.addEventListener('DOMContentLoaded', () => {
   try {
     updateAll();
-    setInterval(updateAll, 100000);
+    setInterval(updateAll, 1000);
   } catch (err) {
     console.error('updateAll failed', err);
   }
