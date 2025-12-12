@@ -88,29 +88,33 @@
   .spawn {
     position:relative;
     min-width:150px;
+    width:150px;
     padding:8px 10px;
     border-radius:8px;
     background:rgba(255,255,255,0.02);
     cursor:default;
     font-size:14px;
+    display:flex;
+    gap:0.5rem;
+    justify-content: space-between;
   }
 
   .spawn .popup {
     display:none;
     position:absolute;
-    top:calc(100% + 8px);
-    left:50%;
+    top:95%;
+    left:10%;
     transform:translateX(-50%);
     background:#0b0c0d;
     border:1px solid rgba(255,255,255,0.06);
     padding:8px;
     border-radius:8px;
-    width:220px;
+    width:85px;
     z-index:30;
   }
 
   .spawn img {
-    width:100%;
+    width:12%;
     height:auto;
     display:block;
     border-radius:6px;
@@ -119,6 +123,11 @@
   .spawn:hover .popup { display:block; }
 
   .muted-small { color:var(--muted); font-size:12px; margin-top:6px; }
+
+  .spawn-icon img {
+    max-width:0.25rem;
+    max-height:0.25rem;
+  }
 
   @media (max-width:720px){
     .grid { flex-direction:column; }

@@ -7,18 +7,30 @@ function createSpawnEl(sp){
   const div = document.createElement('div');
   div.className = 'spawn';
 
-  let emoji = '';
-  if(sp.type === 'M') emoji = '🪨'; // πέτρα
-  else if(sp.type === 'C') emoji = '📦'; // chest
+  let imgSrc = '';
+  if (sp.type === 'M') imgSrc = '/images/stone.webp';     // πέτρα
+  else if (sp.type === 'C') imgSrc = '/images/chest.webp'; // chest
 
-  div.textContent = `${emoji}    ${sp.location}`;
+  const img = document.createElement('img');
+  img.src = imgSrc;
+  img.alt = sp.type;
+  img.className = 'spawn-icon';
 
-  const popup = document.createElement('div');
-  popup.className = 'popup';
-  popup.innerHTML = `<strong>${sp.location}</strong><br>Type: ${sp.type}<br>Hour CET: ${pad(sp.hourCET)}:00`;
+  div.appendChild(img);
+  const popup = document.createElement('div')
+  popup.className = 'popup'
+  popup.innerHTML = `${sp.type === 'M' ? 'Moonstone' : 'Chest'}`
   div.appendChild(popup);
+
+
+  // --- text (location) ---
+  const text = document.createElement('span');
+  text.textContent = sp.location;
+  div.appendChild(text);
+
   return div;
 }
+
 
 // ---------- CET clock (single, robust) ----------
 function ensureCETClock() {
@@ -145,7 +157,7 @@ function updateAll() {
 document.addEventListener('DOMContentLoaded', () => {
   try {
     updateAll();
-    setInterval(updateAll, 1000);
+    setInterval(updateAll, 100000);
   } catch (err) {
     console.error('updateAll failed', err);
   }
